@@ -1,0 +1,33 @@
+# Publishes quendistudio.sftp to the Visual Studio Marketplace via Trusted Publishing (OIDC).
+# Marketplace policy Workflow field must be exactly: publish.yml
+# Docs: https://code.visualstudio.com/api/working-with-extensions/publishing-extension
+
+name: Publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+      - name: Publish to Visual Studio Marketplace
+        run: npx --yes @vscode/vsce publish --oidc
