@@ -1,4 +1,4 @@
-# Publishes quendistudio.sftp-sync to the Visual Studio Marketplace via Trusted Publishing (OIDC).
+# Publishes quendistudio.qsftp to the Visual Studio Marketplace via Trusted Publishing (OIDC).
 # Marketplace policy Workflow field must be exactly: publish.yml
 # Docs: https://code.visualstudio.com/api/working-with-extensions/publishing-extension
 

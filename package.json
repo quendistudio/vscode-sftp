@@ -1,5 +1,5 @@
 {
-  "name": "sftp-sync",
+  "name": "qsftp",
   "displayName": "SFTP Sync",
   "description": "SFTP/FTP sync",
   "version": "1.16.5",

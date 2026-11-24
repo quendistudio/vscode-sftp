@@ -1,6 +1,6 @@
 # sftp sync extension for VS Code
 
-> **This is a personal fork** of [Natizyskunk/vscode-sftp](https://github.com/Natizyskunk/vscode-sftp) (itself a fork of [liximomo's SFTP plugin](https://github.com/liximomo/vscode-sftp.git)), published as `quendistudio.sftp-sync` (Marketplace name must differ from upstream's `sftp`).
+> **This is a personal fork** of [Natizyskunk/vscode-sftp](https://github.com/Natizyskunk/vscode-sftp) (itself a fork of [liximomo's SFTP plugin](https://github.com/liximomo/vscode-sftp.git)), published as `quendistudio.qsftp` (Marketplace name must differ from upstream's `sftp`).
 > It focuses on making the file watcher safe to use together with Remote → Local and Sync Both Directions commands. See [What's different in this fork](#whats-different-in-this-fork).
 > It is not published on the VS Code Marketplace; install it from a VSIX (see [Installation](#installation)).
 
@@ -77,7 +77,7 @@ This produces `sftp-<version>.vsix`. Do not pass `--no-dependencies`: the VSIX m
 
 Or from a terminal (`code` or `cursor`):
 ```
-cursor --install-extension sftp-1.16.5.vsix
+cursor --install-extension sftp-sync-1.16.5.vsix
 ```
 
 Your existing `.vscode/sftp.json` files work unchanged.
