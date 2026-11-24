@@ -1,6 +1,6 @@
 {
   "name": "qsftp",
-  "displayName": "SFTP Sync",
+  "displayName": "qSFTP",
   "description": "SFTP/FTP sync",
   "version": "1.16.5",
   "publisher": "quendistudio",
