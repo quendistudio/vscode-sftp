@@ -19,6 +19,8 @@ Upstream behaviour could push truncated or empty files to the server when `watch
 - **`*.sftp-part` files are never synced** in either direction.
 - **Watcher queue deduplicated by path**, and `uploadOnSave` is skipped while a Remote → Local write is in progress for the same file.
 - Intentionally empty files (e.g. `.gitkeep`) upload normally.
+- **Works on recent editors (Node 23+).** `ssh2` is upgraded to 1.17, which no longer calls the removed `util.isDate` (upstream's bundled `ssh2@1.13` fails every SFTP transfer with `isDate is not a function` on current Cursor / VS Code).
+- **The VSIX ships its runtime dependencies.** `ssh2` is a native-capable module kept outside the webpack bundle, so it must be packaged in `node_modules`; otherwise activation fails with `Cannot find module 'ssh2'` and every command reports `command 'sftp.config' not found`.
 
 Known limitation (unchanged from upstream): if you edit a file locally *while* a Remote → Local transfer is writing that same file, the final rename overwrites your local edit. Nothing corrupted is sent to the server.
 
@@ -63,9 +65,9 @@ git clone https://github.com/quendistudio/vscode-sftp.git
 cd vscode-sftp
 npm ci
 npm test
-npx @vscode/vsce package --no-dependencies
+npm run package
 ```
-This produces `sftp-<version>.vsix`.
+This produces `sftp-<version>.vsix`. Do not pass `--no-dependencies`: the VSIX must include `node_modules/ssh2`.
 
 ### Install the VSIX
 1. Select Extensions (Ctrl + Shift + X).

@@ -4,6 +4,8 @@
 * Fix Sync Both Directions: reverse-direction tasks now use the matching `srcFs`/`targetFs` pair.
 * Sync listing: source list errors fail the operation; target `ENOENT` stays empty; ignore `*.sftp-part` leftovers.
 * Skip `uploadOnSave` while a Remote→Local write is in flight for the same path.
+* Upgrade `ssh2` to 1.17.0: fixes `isDate is not a function` on Node 23+ (current Cursor / VS Code).
+* Package runtime dependencies in the VSIX (`ssh2` is external to the webpack bundle); fixes `Cannot find module 'ssh2'` on activation.
 
 ## 1.16.4 - 2026-10-27
 * Add download icons (file & folder) inline in the remote explorer treeview (Pull request [#381](https://github.com/Natizyskunk/vscode-sftp/pull/381) from @satiromarra vscode-sftp:dev-download-icons).
