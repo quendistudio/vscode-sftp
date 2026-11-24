@@ -1,17 +1,33 @@
 # sftp sync extension for VS Code
 
-New maintained and updated version by [@Natizyskunk](https://github.com/Natizyskunk/) 😀 <!-- and [@satiromarra](https://github.com/satiromarra) --> <br>
-(Forked from the no longer maintained [liximomo's SFTP plugin](https://github.com/liximomo/vscode-sftp.git))
+> **This is a personal fork** of [Natizyskunk/vscode-sftp](https://github.com/Natizyskunk/vscode-sftp) (itself a fork of [liximomo's SFTP plugin](https://github.com/liximomo/vscode-sftp.git)), published as `quendistudio.sftp`.
+> It focuses on making the file watcher safe to use together with Remote → Local and Sync Both Directions commands. See [What's different in this fork](#whats-different-in-this-fork).
+> It is not published on the VS Code Marketplace; install it from a VSIX (see [Installation](#installation)).
 
-- VS Code marketplace : https://marketplace.visualstudio.com/items?itemName=Natizyskunk.sftp <br>
-- VSIX release : https://github.com/Natizyskunk/vscode-sftp/releases/
+Upstream:
+- VS Code marketplace (upstream) : https://marketplace.visualstudio.com/items?itemName=Natizyskunk.sftp <br>
+- Upstream VSIX releases : https://github.com/Natizyskunk/vscode-sftp/releases/
 
-✳ I would be more than happy to have you participate in one way or another to this project. You can do so by simply following the [templates](https://github.com/Natizyskunk/vscode-sftp/issues/new/choose) when you open a new issue or a new pull request.
+## What's different in this fork
 
-## ℹ INFOS - 2025/03/13
+Upstream behaviour could push truncated or empty files to the server when `watcher.autoUpload` was enabled during a Remote → Local transfer that failed or was interrupted. This fork fixes the root causes:
+
+- **Atomic Remote → Local writes.** Downloads are written to `<file>.sftp-part` and renamed only once complete. If the transfer fails or the extension crashes, the original local file is left untouched and the temp file is removed (or ignored if a crash prevented cleanup).
+- **Watcher echo suppression, per file.** After each local write performed by a Remote → Local transfer, the file size and modification time are recorded. Watcher events matching that signature (or files still being written, or directories created by the transfer) are skipped. Any real local edit changes the signature and uploads normally. No time windows, no global freeze of the watcher.
+- **Sync Both Directions fix.** When the remote file is newer, the reverse-direction transfer now reads from the remote filesystem and writes to the local one (upstream kept the wrong filesystem pair).
+- **Listing errors are no longer swallowed.** If the source directory cannot be listed (e.g. connection drop), the sync fails instead of treating the source as empty — which could otherwise delete local files with `syncOption.delete`. A missing target directory (`ENOENT`) is still treated as empty.
+- **`*.sftp-part` files are never synced** in either direction.
+- **Watcher queue deduplicated by path**, and `uploadOnSave` is skipped while a Remote → Local write is in progress for the same file.
+- Intentionally empty files (e.g. `.gitkeep`) upload normally.
+
+Known limitation (unchanged from upstream): if you edit a file locally *while* a Remote → Local transfer is writing that same file, the final rename overwrites your local edit. Nothing corrupted is sent to the server.
+
+Issues for this fork: https://github.com/quendistudio/vscode-sftp/issues — for general extension issues, see upstream's [templates](https://github.com/Natizyskunk/vscode-sftp/issues/new/choose).
+
+## ℹ UPSTREAM INFOS - 2025/03/13
 I've tried to keep this extension up-to-date as much as I can and added a lot of new relevant features. Saddly, for the last year and a half I wasn't really able to work on the project because of personal reasons and I'm really not sure if and when I'll be able to get more time to work on it again. So for now consider the [v1.16.4](https://github.com/Natizyskunk/vscode-sftp/releases/tag/v1.16.4) as the latest official stable release available.
 
-## ℹ INFOS - 2023/06/23
+## ℹ UPSTREAM INFOS - 2023/06/23
 This is the main repository for the SFTP extension since [@liximomo](https://github.com/liximomo) has set his own to deprecated in favor of this one in the VSCode marketplace.
 There are also other forks that are available. Feel free to try them.
 
@@ -39,20 +55,30 @@ VSCode-SFTP enables you to add, edit or delete files within a local directory an
 
 ## Installation
 
-### Method 1 (Recommended : Auto update)
-1. Select Extensions (Ctrl + Shift + X).
-2. Uninstall current sftp extension from @liximomo.
-3. Install new extension directly from VS Code Marketplace : https://marketplace.visualstudio.com/items?itemName=Natizyskunk.sftp.
-4. Voilà!
+**Uninstall any other SFTP extension first** (`Natizyskunk.sftp`, `liximomo.sftp`). Two SFTP extensions active at once means two watchers, and every change gets uploaded twice.
 
-### Method 2 (Manual update)
-To install just follow these steps from within VSCode:
+### Build the VSIX
+```
+git clone https://github.com/quendistudio/vscode-sftp.git
+cd vscode-sftp
+npm ci
+npm test
+npx @vscode/vsce package --no-dependencies
+```
+This produces `sftp-<version>.vsix`.
+
+### Install the VSIX
 1. Select Extensions (Ctrl + Shift + X).
-2. Uninstall current sftp extension from @liximomo.
-3. Open "More Action" menu(ellipsis on the top) and click "Install from VSIX…".
-4. Locate VSIX file and select.
-5. Reload VSCode.
-6. Voilà!
+2. Open the "More Actions" menu (`...` at the top) and click "Install from VSIX…".
+3. Select the generated `sftp-<version>.vsix`.
+4. Run `Developer: Reload Window`.
+
+Or from a terminal (`code` or `cursor`):
+```
+cursor --install-extension sftp-1.16.5.vsix
+```
+
+Your existing `.vscode/sftp.json` files work unchanged.
 
 ## Documentation
 - [Home](https://github.com/Natizyskunk/vscode-sftp/wiki)
@@ -101,9 +127,10 @@ For detailed explanations please go to [wiki](https://github.com/Natizyskunk/vsc
 You can see the full list of configuration options [here](https://github.com/Natizyskunk/vscode-sftp/wiki/configuration).
 
 - [sftp sync extension for VS Code](#sftp-sync-extension-for-vs-code)
+  - [What's different in this fork](#whats-different-in-this-fork)
   - [Installation](#installation)
-    - [Method 1 (Recommended : Auto update)](#method-1-recommended--auto-update)
-    - [Method 2 (Manual update)](#method-2-manual-update)
+    - [Build the VSIX](#build-the-vsix)
+    - [Install the VSIX](#install-the-vsix)
   - [Documentation](#documentation)
   - [Usage](#usage)
   - [Example configurations](#example-configurations)
@@ -119,9 +146,7 @@ You can see the full list of configuration options [here](https://github.com/Nat
     - [Order](#order)
   - [Debug](#debug)
   - [FAQ](#faq)
-  - [Donation](#donation)
-    - [Buy Me a Coffee](#buy-me-a-coffee)
-    - [PayPal](#paypal)
+  - [Support the original author](#support-the-original-author)
 
 ### Simple
 ```json
@@ -318,8 +343,7 @@ In sftp.json:
 ## FAQ
 You can see all the Frequently Asked Questions [here](./FAQ.md).
 
-## Donation
-If this project helped you reduce development time and you wish to contribute financially
+## Support the original author
+Almost all of this extension is the work of [@Natizyskunk](https://github.com/Natizyskunk) (and [@liximomo](https://github.com/liximomo) before). This fork only adds the watcher-safety changes above. If the extension saves you time, consider supporting the upstream maintainer:
 
-### Buy Me a Coffee
 [![Buy Me A Coffee](https://bmc-cdn.nyc3.digitaloceanspaces.com/BMC-button-images/custom_images/orange_img.png)](https://www.buymeacoffee.com/Natizyskunk)
