@@ -1,6 +1,6 @@
 {
-  "name": "sftp",
-  "displayName": "SFTP",
+  "name": "sftp-sync",
+  "displayName": "SFTP Sync",
   "description": "SFTP/FTP sync",
   "version": "1.16.5",
   "publisher": "quendistudio",
