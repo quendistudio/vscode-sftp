@@ -5,8 +5,10 @@ import UResource, { Resource } from './uResource';
 import Scheduler from './scheduler';
 import TransferTask from './transferTask';
 import Ignore from './ignore';
+import localWriteGuard from './localWriteGuard';
 export * from './transferTask';
 export * from './fs';
+export * from './localWriteGuard';
 
 export {
   fileOperations,
@@ -20,4 +22,5 @@ export {
   Resource,
   Scheduler,
   Ignore,
+  localWriteGuard,
 };

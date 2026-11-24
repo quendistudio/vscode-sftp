@@ -3,6 +3,7 @@ import * as fileOperations from './fileBaseOperations';
 import { FileSystem, FileType } from './fs';
 import { Task } from './scheduler';
 import logger from '../logger';
+import localWriteGuard, { TEMP_SUFFIX } from './localWriteGuard';
 
 let hasWarnedModifedTimePermission = false;
 
@@ -38,7 +39,6 @@ export default class TransferTask implements Task {
   private readonly _TransferOption: TransferOption;
   private _handle: Readable;
   private _cancelled: boolean;
-  // private _fileStatus: FileStatus;
 
   constructor(
     src: FileHandle,
@@ -113,6 +113,113 @@ export default class TransferTask implements Task {
   }
 
   private async _transferFile() {
+    if (this._transferDirection === TransferDirection.REMOTE_TO_LOCAL) {
+      await this._transferFileRemoteToLocal();
+      return;
+    }
+    await this._transferFileLocalToRemote();
+  }
+
+  /**
+   * Always write to a temp path then rename so a failed/interrupted download
+   * never truncates the existing local file.
+   */
+  private async _transferFileRemoteToLocal() {
+    const src = this._srcFsPath;
+    const target = this._targetFsPath;
+    const srcFs = this._srcFs;
+    const targetFs = this._targetFs;
+    const {
+      perserveTargetMode,
+      fallbackMode,
+      atime,
+      mtime,
+      filePerm,
+    } = this._TransferOption;
+    const tempTarget = target + TEMP_SUFFIX;
+
+    let mode = filePerm ? parseInt(String(filePerm), 8) : this._TransferOption.mode;
+    if (mode === undefined && perserveTargetMode) {
+      try {
+        const existing = await targetFs.lstat(target);
+        mode = existing.mode;
+      } catch {
+        mode = fallbackMode;
+      }
+    }
+    if (mode === undefined) {
+      mode = fallbackMode;
+    }
+
+    localWriteGuard.beginWrite(target);
+    let uploadFd;
+    let tempOpened = false;
+
+    try {
+      // Open remote stream first — if this fails, the local original is untouched.
+      this._handle = await srcFs.get(src);
+      uploadFd = await targetFs.open(tempTarget, 'w');
+      tempOpened = true;
+
+      await targetFs.put(this._handle, tempTarget, {
+        mode,
+        fd: uploadFd,
+        autoClose: false,
+      });
+
+      if (atime && mtime) {
+        try {
+          await targetFs.futimes(
+            uploadFd,
+            Math.floor(atime / 1000),
+            Math.floor(mtime / 1000)
+          );
+        } catch (error) {
+          if (!hasWarnedModifedTimePermission) {
+            hasWarnedModifedTimePermission = true;
+            logger.warn(
+              `Can't set modified time to the file because ${error.message}`
+            );
+          }
+        }
+      }
+
+      await targetFs.close(uploadFd);
+      uploadFd = undefined;
+
+      try {
+        await targetFs.unlink(target);
+      } catch {
+        // target may not exist yet
+      }
+      await targetFs.rename(tempTarget, target);
+      tempOpened = false;
+
+      const stat = await targetFs.lstat(target);
+      localWriteGuard.recordFile(target, stat.size, stat.mtime);
+    } catch (error) {
+      if (uploadFd !== undefined) {
+        try {
+          await targetFs.close(uploadFd);
+        } catch {
+          // ignore close errors during cleanup
+        }
+        uploadFd = undefined;
+      }
+      if (tempOpened) {
+        try {
+          await targetFs.unlink(tempTarget);
+        } catch {
+          // ignore unlink errors during cleanup
+        }
+      }
+      throw error;
+    } finally {
+      localWriteGuard.endWrite(target);
+    }
+  }
+
+  private async _transferFileLocalToRemote() {
     const src = this._srcFsPath;
     const target = this._targetFsPath;
     const srcFs = this._srcFs;
@@ -126,20 +233,16 @@ export default class TransferTask implements Task {
       mtime,
       filePerm
     } = this._TransferOption;
-    // Set the mode if it's specified in the config, otherwise get mode from server.
     let mode = filePerm ? parseInt(String(filePerm), 8) : this._TransferOption.mode;
-    let targetFd; // Destination file
-    let uploadFd; // Temp file or destination file when no temp file is used
-    const uploadTarget = target + (useTempFile ? ".new" : "");
+    let targetFd;
+    let uploadFd;
+    const uploadTarget = target + (useTempFile ? '.new' : '');
 
-    // Use mode first.
-    // Then check perserveTargetMode and fallback to fallbackMode if fail to get mode of target
     if (mode === undefined && perserveTargetMode) {
       if (useTempFile) {
         [targetFd, uploadFd] = await Promise.all([
-          targetFs.open(target, 'r')  // Get handle for reading the target mode
-            .catch(() => null), // Return null if target file doesn't exist
-          targetFs.open(uploadTarget, 'w')  // Get handle for the file upload
+          targetFs.open(target, 'r').catch(() => null),
+          targetFs.open(uploadTarget, 'w'),
         ]);
       } else {
         targetFd = uploadFd = await targetFs.open(uploadTarget, 'w');
@@ -157,12 +260,10 @@ export default class TransferTask implements Task {
         if (useTempFile) {
           targetFs.close(targetFd);
         }
-
       } else {
         this._handle = await srcFs.get(src);
         mode = fallbackMode;
       }
-
     } else {
       [this._handle, uploadFd] = await Promise.all([
         srcFs.get(src),
@@ -172,7 +273,7 @@ export default class TransferTask implements Task {
 
     try {
       if (useTempFile) {
-        logger.info("uploading temp file: " + uploadTarget);
+        logger.info('uploading temp file: ' + uploadTarget);
       }
       await targetFs.put(this._handle, uploadTarget, {
         mode,
@@ -197,19 +298,18 @@ export default class TransferTask implements Task {
       }
 
       if (useTempFile) {
-        logger.info("moving from: " + target + ".new" + " to: " + target);
-        if(openSsh) {
+        logger.info('moving from: ' + target + '.new' + ' to: ' + target);
+        if (openSsh) {
           await targetFs.renameAtomic(uploadTarget, target);
         } else {
           try {
             await targetFs.unlink(target);
-          } catch(error) {
+          } catch (error) {
             // Just ignore
           }
           await targetFs.rename(uploadTarget, target);
         }
       }
-
     } finally {
       await targetFs.close(uploadFd);
     }

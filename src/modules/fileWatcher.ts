@@ -1,38 +1,55 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 import * as debounce from 'lodash.debounce';
 import logger from '../logger';
 import { isValidFile, fileDepth } from '../helper';
 import { upload, removeRemote } from '../fileHandlers';
-import { WatcherService, TransferDirection } from '../core';
+import { WatcherService, localWriteGuard } from '../core';
 import app from '../app';
 import StatusBarItem from '../ui/statusBarItem';
-import { getRunningTransformTasks } from './serviceManager';
 
 const watchers: {
   [x: string]: vscode.FileSystemWatcher;
 } = {};
 
-const uploadQueue = new Set<vscode.Uri>();
-const deleteQueue = new Set<vscode.Uri>();
+// Deduplicate by fsPath (Set<Uri> would keep duplicate Uri objects for the same path).
+const uploadQueue = new Map<string, vscode.Uri>();
+const deleteQueue = new Map<string, vscode.Uri>();
 
 // less than 550 will not work
 const ACTION_INTEVAL = 550;
 
 function doUpload() {
-  const files = Array.from(uploadQueue).sort((a, b) => fileDepth(b.fsPath) - fileDepth(a.fsPath));
+  const files = Array.from(uploadQueue.values()).sort(
+    (a, b) => fileDepth(b.fsPath) - fileDepth(a.fsPath)
+  );
   uploadQueue.clear();
 
-  const currentDownloadTasks = getRunningTransformTasks().filter(
-    task => task.transferType === TransferDirection.REMOTE_TO_LOCAL
-  );
-
   files.forEach(async uri => {
-    // current target is still in downloading, so don't upload it.
-    if (currentDownloadTasks.find(task => task.localFsPath === uri.fsPath)) {
+    const fspath = uri.fsPath;
+
+    if (localWriteGuard.isTempPath(fspath)) {
+      logger.info(`[watcher/skip] ${fspath} (temp)`);
       return;
     }
 
-    const fspath = uri.fsPath;
+    try {
+      const st = fs.statSync(fspath);
+      if (
+        localWriteGuard.isEcho(fspath, {
+          size: st.size,
+          mtime: st.mtimeMs,
+          isDirectory: st.isDirectory(),
+        })
+      ) {
+        logger.info(`[watcher/skip] ${fspath} (echo)`);
+        return;
+      }
+    } catch (error) {
+      logger.info(`[watcher/skip] ${fspath} (missing)`);
+      return;
+    }
+
     logger.info(`[watcher/updated] ${fspath}`);
     try {
       await upload(uri);
@@ -44,10 +61,15 @@ function doUpload() {
 }
 
 function doDelete() {
-  const files = Array.from(deleteQueue).sort((a, b) => fileDepth(b.fsPath) - fileDepth(a.fsPath));
+  const files = Array.from(deleteQueue.values()).sort(
+    (a, b) => fileDepth(b.fsPath) - fileDepth(a.fsPath)
+  );
   deleteQueue.clear();
   files.forEach(async uri => {
     const fspath = uri.fsPath;
+    if (localWriteGuard.isTempPath(fspath)) {
+      return;
+    }
     logger.info(`[watcher/removed] ${fspath}`);
     try {
       await removeRemote(uri);
@@ -66,7 +88,11 @@ function uploadHandler(uri: vscode.Uri) {
     return;
   }
 
-  uploadQueue.add(uri);
+  if (localWriteGuard.isTempPath(uri.fsPath)) {
+    return;
+  }
+
+  uploadQueue.set(uri.fsPath, uri);
   debouncedUpload();
 }
 
@@ -117,7 +143,7 @@ function createWatcher(
         return;
       }
 
-      deleteQueue.add(uri);
+      deleteQueue.set(uri.fsPath, uri);
       debouncedDelete();
     });
   }

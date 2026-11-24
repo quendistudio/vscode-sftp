@@ -13,6 +13,7 @@ import {
 } from './serviceManager';
 import { reportError, isValidFile, isConfigFile, isInWorkspace } from '../helper';
 import { downloadFile, uploadFile } from '../fileHandlers';
+import { localWriteGuard } from '../core';
 
 let workspaceWatcher: vscode.Disposable;
 
@@ -47,6 +48,10 @@ async function handleFileSave(uri: vscode.Uri) {
   const config = fileService.getConfig();
   if (config.uploadOnSave) {
     const fspath = await realpathSync.native(uri.fsPath);
+    if (localWriteGuard.isWriting(fspath) || localWriteGuard.isTempPath(fspath)) {
+      logger.info(`[file-save/skip] ${fspath} (r2l in-flight)`);
+      return;
+    }
     uri = vscode.Uri.file(fspath);
     logger.info(`[file-save] ${fspath}`);
     try {
