@@ -67,7 +67,7 @@ npm ci
 npm test
 npm run package
 ```
-This produces `sftp-<version>.vsix`. Do not pass `--no-dependencies`: the VSIX must include `node_modules/ssh2`.
+This produces `qsftp-<version>.vsix`. Do not pass `--no-dependencies`: the VSIX must include `node_modules/ssh2`.
 
 ### Install the VSIX
 1. Select Extensions (Ctrl + Shift + X).
@@ -77,7 +77,7 @@ This produces `sftp-<version>.vsix`. Do not pass `--no-dependencies`: the VSIX m
 
 Or from a terminal (`code` or `cursor`):
 ```
-cursor --install-extension sftp-sync-1.16.5.vsix
+cursor --install-extension qsftp-1.16.5.vsix
 ```
 
 Your existing `.vscode/sftp.json` files work unchanged.
