@@ -7,8 +7,12 @@ _debug
 TODO.md
 INSTALL_DEBUG.md
 
+### Tests ###
+.tests_folder
+
 ### Extensions ###
 sftp-*.vsix
+qsftp-*.vsix
 
 ### VS Code ###
 .vscode/**

@@ -1,8 +1,7 @@
 ## 1.16.6 - 2026-11-25
 * Reconnect when the SFTP channel is closed server-side (Pull request [#582](https://github.com/Natizyskunk/vscode-sftp/pull/582) from @HOLYTjeerd).
-* Reload SFTP config when `.vscode/sftp.json` changes on disk, including external edits (based on Pull request [#494](https://github.com/Natizyskunk/vscode-sftp/pull/494) from @kreare-priv); use workspace `RelativePattern` so Windows/Cursor fire on non-editor writes, and skip auto-upload of the config file.
+* Reload SFTP config when `.vscode/sftp.json` changes on disk, including external edits such as a git checkout, and never auto-upload it (based on Pull request [#494](https://github.com/Natizyskunk/vscode-sftp/pull/494) from @kreare-priv).
 * Add Diff with Remote to the Source Control file context menu (Pull request [#617](https://github.com/Natizyskunk/vscode-sftp/pull/617) from @NadavK).
-* Prefix all command titles with `qSFTP:` so context menus and the Command Palette identify the fork (category removed to avoid a double prefix).
 
 ## 1.16.5 - 2026-11-24
 * Atomic Remote→Local writes via `.sftp-part` temp files so interrupted downloads never truncate local files.

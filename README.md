@@ -2,9 +2,9 @@
 
 > **This is a personal fork** of [Natizyskunk/vscode-sftp](https://github.com/Natizyskunk/vscode-sftp) (itself a fork of [liximomo's SFTP plugin](https://github.com/liximomo/vscode-sftp.git)), published as `quendistudio.qsftp` (Marketplace name must differ from upstream's `sftp`).
 > It focuses on making the file watcher safe to use together with Remote → Local and Sync Both Directions commands. See [What's different in this fork](#whats-different-in-this-fork).
-> It is not published on the VS Code Marketplace; install it from a VSIX (see [Installation](#installation)).
+> Marketplace id: [`quendistudio.qsftp`](https://marketplace.visualstudio.com/items?itemName=quendistudio.qsftp). You can also install from a VSIX (see [Installation](#installation)).
 
-Upstream:
+Upstream (historical, lightly maintained):
 - VS Code marketplace (upstream) : https://marketplace.visualstudio.com/items?itemName=Natizyskunk.sftp <br>
 - Upstream VSIX releases : https://github.com/Natizyskunk/vscode-sftp/releases/
 
@@ -21,10 +21,13 @@ Upstream behaviour could push truncated or empty files to the server when `watch
 - Intentionally empty files (e.g. `.gitkeep`) upload normally.
 - **Works on recent editors (Node 23+).** `ssh2` is upgraded to 1.17, which no longer calls the removed `util.isDate` (upstream's bundled `ssh2@1.13` fails every SFTP transfer with `isDate is not a function` on current Cursor / VS Code).
 - **The VSIX ships its runtime dependencies.** `ssh2` is a native-capable module kept outside the webpack bundle, so it must be packaged in `node_modules`; otherwise activation fails with `Cannot find module 'ssh2'` and every command reports `command 'sftp.config' not found`.
+- **Reconnects after a server-side SFTP channel close** (e.g. idle timeout or a killed `sftp-server` / `internal-sftp` process) instead of hanging on a dead channel.
+- **`sftp.json` is reloaded when it changes outside the editor** (e.g. git branch checkout, another tool), and is never auto-uploaded by the watcher.
 
 Known limitation (unchanged from upstream): if you edit a file locally *while* a Remote → Local transfer is writing that same file, the final rename overwrites your local edit. Nothing corrupted is sent to the server.
 
-Issues for this fork: https://github.com/quendistudio/vscode-sftp/issues — for general extension issues, see upstream's [templates](https://github.com/Natizyskunk/vscode-sftp/issues/new/choose).
+**Issues:** please open everything here — https://github.com/quendistudio/vscode-sftp/issues  
+(upstream Natizyskunk is no longer actively maintained; use the Bug report / Feature request forms in this repo).
 
 ## ℹ UPSTREAM INFOS - 2025/03/13
 I've tried to keep this extension up-to-date as much as I can and added a lot of new relevant features. Saddly, for the last year and a half I wasn't really able to work on the project because of personal reasons and I'm really not sure if and when I'll be able to get more time to work on it again. So for now consider the [v1.16.4](https://github.com/Natizyskunk/vscode-sftp/releases/tag/v1.16.4) as the latest official stable release available.
@@ -72,12 +75,12 @@ This produces `qsftp-<version>.vsix`. Do not pass `--no-dependencies`: the VSIX 
 ### Install the VSIX
 1. Select Extensions (Ctrl + Shift + X).
 2. Open the "More Actions" menu (`...` at the top) and click "Install from VSIX…".
-3. Select the generated `sftp-<version>.vsix`.
+3. Select the generated `qsftp-<version>.vsix`.
 4. Run `Developer: Reload Window`.
 
 Or from a terminal (`code` or `cursor`):
 ```
-cursor --install-extension qsftp-1.16.5.vsix
+cursor --install-extension qsftp-<version>.vsix
 ```
 
 Your existing `.vscode/sftp.json` files work unchanged.

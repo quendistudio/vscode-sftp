@@ -37,7 +37,7 @@
       "activitybar": [
         {
           "id": "sftp",
-          "title": "qSFTP",
+          "title": "SFTP",
           "icon": "resources/remote-explorer.svg"
         }
       ]
@@ -76,27 +76,33 @@
     "commands": [
       {
         "command": "sftp.config",
-        "title": "qSFTP: Config"
+        "title": "Config",
+        "category": "SFTP"
       },
       {
         "command": "sftp.setProfile",
-        "title": "qSFTP: Set Profile"
+        "title": "Set Profile",
+        "category": "SFTP"
       },
       {
         "command": "sftp.openConnectInTerminal",
-        "title": "qSFTP: Open SSH in Terminal"
+        "title": "Open SSH in Terminal",
+        "category": "SFTP"
       },
       {
         "command": "sftp.cancelAllTransfer",
-        "title": "qSFTP: Cancel All Transfers"
+        "title": "Cancel All Transfers",
+        "category": "SFTP"
       },
       {
         "command": "sftp.upload.file",
-        "title": "qSFTP: Upload File"
+        "title": "Upload File",
+        "category": "SFTP"
       },
       {
         "command": "sftp.upload.changedFiles",
-        "title": "qSFTP: Upload Changed Files",
+        "title": "Upload Changed Files",
+        "category": "SFTP",
         "icon": {
           "light": "resources/light/upload.svg",
           "dark": "resources/dark/upload.svg"
@@ -104,51 +110,63 @@
       },
       {
         "command": "sftp.upload.activeFile",
-        "title": "qSFTP: Upload Active File"
+        "title": "Upload Active File",
+        "category": "SFTP"
       },
       {
         "command": "sftp.upload.folder",
-        "title": "qSFTP: Upload Folder"
+        "title": "Upload Folder",
+        "category": "SFTP"
       },
       {
         "command": "sftp.upload.activeFolder",
-        "title": "qSFTP: Upload Active Folder"
+        "title": "Upload Active Folder",
+        "category": "SFTP"
       },
       {
         "command": "sftp.upload.project",
-        "title": "qSFTP: Upload Project"
+        "title": "Upload Project",
+        "category": "SFTP"
       },
       {
         "command": "sftp.forceUpload",
-        "title": "qSFTP: Force Upload"
+        "title": "Force Upload",
+        "category": "SFTP"
       },
       {
         "command": "sftp.upload.file.to.allProfiles",
-        "title": "qSFTP: Upload File To All Profiles"
+        "title": "Upload File To All Profiles",
+        "category": "SFTP"
       },
       {
         "command": "sftp.upload.activeFile.to.allProfiles",
-        "title": "qSFTP: Upload Active File To All Profiles"
+        "title": "Upload Active File To All Profiles",
+        "category": "SFTP"
       },
       {
         "command": "sftp.upload.folder.to.allProfiles",
-        "title": "qSFTP: Upload Folder To All Profiles"
+        "title": "Upload Folder To All Profiles",
+        "category": "SFTP"
       },
       {
         "command": "sftp.upload.activeFolder.to.allProfiles",
-        "title": "qSFTP: Upload Active Folder To All Profiles"
+        "title": "Upload Active Folder To All Profiles",
+        "category": "SFTP"
       },
       {
         "command": "sftp.upload.project.to.allProfiles",
-        "title": "qSFTP: Upload Project To All Profiles"
+        "title": "Upload Project To All Profiles",
+        "category": "SFTP"
       },
       {
         "command": "sftp.forceUpload.to.allProfiles",
-        "title": "qSFTP: Force Upload To All Profiles"
+        "title": "Force Upload To All Profiles",
+        "category": "SFTP"
       },
       {
         "command": "sftp.download.file",
-        "title": "qSFTP: Download File",
+        "title": "Download File",
+        "category": "SFTP",
         "icon": {
           "dark": "resources/dark/download-file.svg",
           "light": "resources/light/download-file.svg"
@@ -156,11 +174,13 @@
       },
       {
         "command": "sftp.download.activeFile",
-        "title": "qSFTP: Download Active File"
+        "title": "Download Active File",
+        "category": "SFTP"
       },
       {
         "command": "sftp.download.folder",
-        "title": "qSFTP: Download Folder",
+        "title": "Download Folder",
+        "category": "SFTP",
         "icon": {
           "dark": "resources/dark/download-folder.svg",
           "light": "resources/light/download-folder.svg"
@@ -168,79 +188,97 @@
       },
       {
         "command": "sftp.download.activeFolder",
-        "title": "qSFTP: Download Active Folder"
+        "title": "Download Active Folder",
+        "category": "SFTP"
       },
       {
         "command": "sftp.download.project",
-        "title": "qSFTP: Download Project"
+        "title": "Download Project",
+        "category": "SFTP"
       },
       {
         "command": "sftp.forceDownload",
-        "title": "qSFTP: Force Download"
+        "title": "Force Download",
+        "category": "SFTP"
       },
       {
         "command": "sftp.sync.localToRemote",
-        "title": "qSFTP: Sync Local -> Remote"
+        "title": "Sync Local -> Remote",
+        "category": "SFTP"
       },
       {
         "command": "sftp.sync.remoteToLocal",
-        "title": "qSFTP: Sync Remote -> Local"
+        "title": "Sync Remote -> Local",
+        "category": "SFTP"
       },
       {
         "command": "sftp.sync.bothDirections",
-        "title": "qSFTP: Sync Both Directions"
+        "title": "Sync Both Directions",
+        "category": "SFTP"
       },
       {
         "command": "sftp.diff",
-        "title": "qSFTP: Diff with Remote"
+        "title": "Diff with Remote",
+        "category": "SFTP"
       },
       {
         "command": "sftp.diff.activeFile",
-        "title": "qSFTP: Diff Active File with Remote"
+        "title": "Diff Active File with Remote",
+        "category": "SFTP"
       },
       {
         "command": "sftp.list",
-        "title": "qSFTP: List"
+        "title": "List",
+        "category": "SFTP"
       },
       {
         "command": "sftp.listActiveFolder",
-        "title": "qSFTP: List Active Folder"
+        "title": "List Active Folder",
+        "category": "SFTP"
       },
       {
         "command": "sftp.listAll",
-        "title": "qSFTP: List All"
+        "title": "List All",
+        "category": "SFTP"
       },
       {
         "command": "sftp.delete.remote",
-        "title": "qSFTP: Delete"
+        "title": "Delete",
+        "category": "SFTP"
       },
       {
         "command": "sftp.create.folder",
-        "title": "qSFTP: Create Folder"
+        "title": "Create Folder",
+        "category": "SFTP"
       },
       {
         "command": "sftp.create.file",
-        "title": "qSFTP: Create File"
+        "title": "Create File",
+        "category": "SFTP"
       },
       {
         "command": "sftp.revealInExplorer",
-        "title": "qSFTP: Reveal in Explorer"
+        "title": "Reveal in Explorer",
+        "category": "SFTP"
       },
       {
         "command": "sftp.revealInRemoteExplorer",
-        "title": "qSFTP: Reveal in Remote Explorer"
+        "title": "Reveal in Remote Explorer",
+        "category": "SFTP"
       },
       {
         "command": "sftp.remoteExplorer.editInLocal",
-        "title": "qSFTP: Edit in Local"
+        "title": "Edit in Local",
+        "category": "SFTP"
       },
       {
         "command": "sftp.viewContent",
-        "title": "qSFTP: View Content"
+        "title": "View Content",
+        "category": "SFTP"
       },
       {
         "command": "sftp.remoteExplorer.refresh",
-        "title": "qSFTP: Refresh",
+        "title": "Refresh",
         "icon": {
           "light": "resources/light/refresh.svg",
           "dark": "resources/dark/refresh.svg"
@@ -248,7 +286,8 @@
       },
       {
         "command": "sftp.remoteExplorer.refreshActiveFile",
-        "title": "qSFTP: Refresh Active Remote File",
+        "title": "Refresh Active Remote File",
+        "category": "SFTP",
         "icon": {
           "light": "resources/light/refresh.svg",
           "dark": "resources/dark/refresh.svg"
