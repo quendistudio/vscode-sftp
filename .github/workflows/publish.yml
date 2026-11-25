@@ -1,6 +1,16 @@
-# Publishes quendistudio.qsftp to the Visual Studio Marketplace via Trusted Publishing (OIDC).
-# Marketplace policy Workflow field must be exactly: publish.yml
+# Publishes quendistudio.qsftp to:
+# - Visual Studio Marketplace (Trusted Publishing / OIDC)
+# - Open VSX (used by Cursor's extension search)
+#
+# VS Marketplace: Workflow field in Trusted Publishing must be exactly publish.yml
 # Docs: https://code.visualstudio.com/api/working-with-extensions/publishing-extension
+#
+# Open VSX:
+# - First publish: create a token at https://open-vsx.org/user-settings/tokens
+#   and set repo secret OVSX_PAT (namespace quendistudio must be claimed).
+# - Later: register this workflow as a Trusted Publisher on Open VSX, then
+#   remove OVSX_PAT so publishes use OIDC (--trusted-publishing).
+# Docs: https://github.com/eclipse-openvsx/openvsx/wiki/Trusted-Publishing
 
 name: Publish
 
@@ -31,3 +41,13 @@ jobs:
 
       - name: Publish to Visual Studio Marketplace
         run: npx --yes @vscode/vsce publish --oidc
+
+      - name: Publish to Open VSX
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          if [ -n "${OVSX_PAT}" ]; then
+            npx --yes ovsx publish
+          else
+            npx --yes ovsx publish --trusted-publishing
+          fi
