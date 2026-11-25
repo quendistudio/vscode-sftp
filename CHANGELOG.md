@@ -1,5 +1,5 @@
 ## 1.16.7 - 2026-11-25
-* Update the Marketplace extension icon for qSFTP (missed in the 1.16.6 publish).
+* Update the Marketplace extension icon for qSFTP.
 
 ## 1.16.6 - 2026-11-25
 * Reconnect when the SFTP channel is closed server-side (Pull request [#582](https://github.com/Natizyskunk/vscode-sftp/pull/582) from @HOLYTjeerd).
