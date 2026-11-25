@@ -12,15 +12,10 @@ Upstream (historical, lightly maintained):
 
 Upstream behaviour could push truncated or empty files to the server when `watcher.autoUpload` was enabled during a Remote → Local transfer that failed or was interrupted. This fork fixes the root causes:
 
-- **Atomic Remote → Local writes.** Downloads are written to `<file>.sftp-part` and renamed only once complete. If the transfer fails or the extension crashes, the original local file is left untouched and the temp file is removed (or ignored if a crash prevented cleanup).
-- **Watcher echo suppression, per file.** After each local write performed by a Remote → Local transfer, the file size and modification time are recorded. Watcher events matching that signature (or files still being written, or directories created by the transfer) are skipped. Any real local edit changes the signature and uploads normally. No time windows, no global freeze of the watcher.
-- **Sync Both Directions fix.** When the remote file is newer, the reverse-direction transfer now reads from the remote filesystem and writes to the local one (upstream kept the wrong filesystem pair).
-- **Listing errors are no longer swallowed.** If the source directory cannot be listed (e.g. connection drop), the sync fails instead of treating the source as empty — which could otherwise delete local files with `syncOption.delete`. A missing target directory (`ENOENT`) is still treated as empty.
-- **`*.sftp-part` files are never synced** in either direction.
-- **Watcher queue deduplicated by path**, and `uploadOnSave` is skipped while a Remote → Local write is in progress for the same file.
-- Intentionally empty files (e.g. `.gitkeep`) upload normally.
-- **Works on recent editors (Node 23+).** `ssh2` is upgraded to 1.17, which no longer calls the removed `util.isDate` (upstream's bundled `ssh2@1.13` fails every SFTP transfer with `isDate is not a function` on current Cursor / VS Code).
-- **The VSIX ships its runtime dependencies.** `ssh2` is a native-capable module kept outside the webpack bundle, so it must be packaged in `node_modules`; otherwise activation fails with `Cannot find module 'ssh2'` and every command reports `command 'sftp.config' not found`.
+- **Atomic Remote → Local writes.** Downloads are written to a temporary `<file>.sftp-part` (never synced) and renamed only once complete. If the transfer fails or the extension crashes, the original local file is left untouched.
+- **No watcher echo.** Files written by a Remote → Local transfer are not re-uploaded by the watcher or `uploadOnSave`; any real local edit afterwards uploads normally.
+- **Sync Both Directions fix.** When the remote file is newer, it is now correctly downloaded (upstream used the wrong direction).
+- **Listing errors are no longer swallowed.** If the source directory cannot be listed (e.g. connection drop), the sync fails instead of treating the source as empty — which could otherwise delete files with `syncOption.delete`.
 - **Reconnects after a server-side SFTP channel close** (e.g. idle timeout or a killed `sftp-server` / `internal-sftp` process) instead of hanging on a dead channel.
 - **`sftp.json` is reloaded when it changes outside the editor** (e.g. git branch checkout, another tool), and is never auto-uploaded by the watcher.
 
