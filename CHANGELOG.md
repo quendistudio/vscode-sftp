@@ -1,3 +1,6 @@
+## 1.16.8 - 2026-11-25
+* Update the Marketplace extension icon for qSFTP.
+
 ## 1.16.7 - 2026-11-25
 * Update the Marketplace extension icon for qSFTP.
 
