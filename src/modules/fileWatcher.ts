@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as debounce from 'lodash.debounce';
 import logger from '../logger';
-import { isValidFile, fileDepth } from '../helper';
+import { isValidFile, isConfigFile, fileDepth } from '../helper';
 import { upload, removeRemote } from '../fileHandlers';
 import { WatcherService, localWriteGuard } from '../core';
 import app from '../app';
@@ -89,6 +89,11 @@ function uploadHandler(uri: vscode.Uri) {
   }
 
   if (localWriteGuard.isTempPath(uri.fsPath)) {
+    return;
+  }
+
+  // Config reloads live in fileActivityMonitor; never auto-upload sftp.json.
+  if (isConfigFile(uri)) {
     return;
   }
 
