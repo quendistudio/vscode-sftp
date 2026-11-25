@@ -1,3 +1,6 @@
+## 1.16.7 - 2026-11-25
+* Update the Marketplace extension icon for qSFTP (missed in the 1.16.6 publish).
+
 ## 1.16.6 - 2026-11-25
 * Reconnect when the SFTP channel is closed server-side (Pull request [#582](https://github.com/Natizyskunk/vscode-sftp/pull/582) from @HOLYTjeerd).
 * Reload SFTP config when `.vscode/sftp.json` changes on disk, including external edits such as a git checkout, and never auto-upload it (based on Pull request [#494](https://github.com/Natizyskunk/vscode-sftp/pull/494) from @kreare-priv).
