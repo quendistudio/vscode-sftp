@@ -92,6 +92,8 @@ export default class SSHClient extends RemoteClient {
 
     await this._connectSSHClient(this._client, { ...lastOption, sock }, config);
     this.sftp = await this._getSftp(this._client);
+    // ssh2 v1.x does not emit Client 'close' on channel-level closure.
+    this.sftp.on('close', () => this._client.end());
 
     if (lastOption.limitOpenFilesOnRemote) {
       if (typeof lastOption.limitOpenFilesOnRemote !== 'boolean') {
