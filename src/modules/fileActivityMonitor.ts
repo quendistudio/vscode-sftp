@@ -16,6 +16,7 @@ import { downloadFile, uploadFile } from '../fileHandlers';
 import { localWriteGuard } from '../core';
 
 let workspaceWatcher: vscode.Disposable;
+let configFileWatcher: vscode.FileSystemWatcher;
 
 async function handleConfigSave(uri: vscode.Uri) {
   const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
@@ -97,6 +98,9 @@ function watchWorkspace({
   if (workspaceWatcher) {
     workspaceWatcher.dispose();
   }
+  if (configFileWatcher) {
+    configFileWatcher.dispose();
+  }
 
   workspaceWatcher = onDidSaveTextDocument((doc: vscode.TextDocument) => {
     const uri = doc.uri;
@@ -109,13 +113,28 @@ function watchWorkspace({
       app.fsCache.del(uri.fsPath);
     }
 
+    // Config reloads are handled by configFileWatcher (covers editor save + external edits).
     if (isConfigFile(uri)) {
-      onDidSaveSftpConfig(uri);
       return;
     }
 
     onDidSaveFile(uri);
   });
+
+  // Literal glob: CONFIG_PATH uses path.join and would break the pattern on Windows.
+  configFileWatcher = vscode.workspace.createFileSystemWatcher(
+    '**/.vscode/sftp.json',
+    false,
+    false,
+    true
+  );
+  const reloadConfig = (uri: vscode.Uri) => {
+    if (isConfigFile(uri)) {
+      onDidSaveSftpConfig(uri);
+    }
+  };
+  configFileWatcher.onDidCreate(reloadConfig);
+  configFileWatcher.onDidChange(reloadConfig);
 }
 
 function init() {
@@ -136,6 +155,9 @@ function init() {
 function destory() {
   if (workspaceWatcher) {
     workspaceWatcher.dispose();
+  }
+  if (configFileWatcher) {
+    configFileWatcher.dispose();
   }
 }
 
