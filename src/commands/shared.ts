@@ -133,6 +133,9 @@ export function uriFromExplorerContextOrEditorContext(item, items): undefined | 
     } else {
       return item.resource.uri;
     }
+  } else if (item?.resourceUri instanceof Uri) {
+    // from source control view
+    return item.resourceUri;
   }
 
   return;
