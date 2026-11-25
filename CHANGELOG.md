@@ -1,3 +1,8 @@
+## 1.16.6 - 2026-11-25
+* Reconnect when the SFTP channel is closed server-side (Pull request [#582](https://github.com/Natizyskunk/vscode-sftp/pull/582) from @HOLYTjeerd).
+* Reload SFTP config when `.vscode/sftp.json` changes on disk, including external edits (based on Pull request [#494](https://github.com/Natizyskunk/vscode-sftp/pull/494) from @kreare-priv).
+* Add Diff with Remote to the Source Control file context menu (Pull request [#617](https://github.com/Natizyskunk/vscode-sftp/pull/617) from @NadavK).
+
 ## 1.16.5 - 2026-11-24
 * Atomic Remote→Local writes via `.sftp-part` temp files so interrupted downloads never truncate local files.
 * Watcher ignores filesystem echoes of R2L writes (per-file signature / in-flight / created dirs) without freezing unrelated uploads.
