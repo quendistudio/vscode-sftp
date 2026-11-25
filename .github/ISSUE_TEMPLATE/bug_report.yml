@@ -1,0 +1,119 @@
+name: Bug report
+description: Something does not work as expected in qSFTP (quendistudio.qsftp)
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Before submitting
+      options:
+        - label: I read the [FAQ](https://github.com/quendistudio/vscode-sftp/blob/develop/FAQ.md)
+          required: true
+        - label: I searched [existing issues](https://github.com/quendistudio/vscode-sftp/issues) (including closed)
+          required: true
+        - label: I am using **qSFTP** (`quendistudio.qsftp`), not `Natizyskunk.sftp` / `liximomo.sftp`
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: Clear and concise description of what went wrong.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: To reproduce
+      description: Steps that reliably trigger the problem.
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Where does the problem show up?
+      options:
+        - Upload / download / sync
+        - File watcher / uploadOnSave
+        - Remote → Local / Sync Both Directions
+        - Config / profiles / connection
+        - Remote Explorer UI
+        - Install / activation / Marketplace
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: editor
+    attributes:
+      label: Editor
+      options:
+        - VS Code
+        - Cursor
+        - VSCodium / other
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: e.g. Windows 11, macOS 15, Ubuntu 24.04
+    validations:
+      required: true
+
+  - type: input
+    id: editor_version
+    attributes:
+      label: Editor version
+      placeholder: e.g. VS Code 1.95.0 / Cursor 0.44
+    validations:
+      required: true
+
+  - type: input
+    id: extension_version
+    attributes:
+      label: Extension version
+      placeholder: e.g. 1.16.5 (Extensions view → qSFTP)
+    validations:
+      required: true
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Relevant sftp.json (redacted)
+      description: Paste only the relevant parts. Remove host/user/password/passphrase/privateKeyPath secrets.
+      render: json
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Extension logs (required for connection/transfer bugs)
+      description: |
+        1. Set `sftp.debug` (or `sftp.printDebugLog`) to `true` and reload the window.
+        2. Reproduce the problem.
+        3. Copy logs from **View → Output → sftp**.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / extra context
+      description: Optional.

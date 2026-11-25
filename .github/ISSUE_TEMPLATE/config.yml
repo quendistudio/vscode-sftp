@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: FAQ
+    url: https://github.com/quendistudio/vscode-sftp/blob/develop/FAQ.md
+    about: Common setup and troubleshooting answers before opening an issue.
+  - name: Upstream (Natizyskunk) — read-only context
+    url: https://github.com/Natizyskunk/vscode-sftp
+    about: Historical upstream repo (no longer actively maintained). Please open new issues here, not there.
