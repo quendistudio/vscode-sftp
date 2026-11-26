@@ -65,7 +65,7 @@ npm ci
 npm test
 npm run package
 ```
-This produces `qsftp-<version>.vsix`. Do not pass `--no-dependencies`: the VSIX must include `node_modules/ssh2`.
+This produces `qsftp-<version>.vsix`. Only `ssh2` is a runtime `dependency` (webpack external); do not pass `--no-dependencies` or activation fails with `Cannot find module 'ssh2'`.
 
 ### Install the VSIX
 1. Select Extensions (Ctrl + Shift + X).

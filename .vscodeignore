@@ -21,10 +21,5 @@ CONTRIBUTING.md
 FAQ.md
 INSTALL_DEBUG.md
 **/*.vsix
-node_modules/@types/**
-node_modules/webpack/**
-node_modules/webpack-cli/**
-node_modules/ts-loader/**
-node_modules/typescript/**
-node_modules/jest/**
-node_modules/tslint/**
+**/*.bak*
+# ponytail: only ssh2 is a production dependency; vsce already omits the rest.

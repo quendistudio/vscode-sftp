@@ -1,3 +1,6 @@
+## 1.16.10 - 2026-11-26
+* Slim the VSIX: only `ssh2` remains a runtime dependency; other libs stay webpack-bundled and out of the package (~1.4 MB → ~850 KB).
+
 ## 1.16.9 - 2026-11-26
 * Publish to Open VSX on release so the extension appears in Cursor's extension search.
 * Trim the README fork differences section to user-facing behaviour.
