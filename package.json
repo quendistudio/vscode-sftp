@@ -2,7 +2,7 @@
   "name": "qsftp",
   "displayName": "qSFTP",
   "description": "SFTP/FTP sync",
-  "version": "1.16.8",
+  "version": "1.16.9",
   "publisher": "quendistudio",
   "author": "quendistudio (fork of Natizyskunk/vscode-sftp)",
   "engines": {

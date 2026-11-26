@@ -1,3 +1,7 @@
+## 1.16.9 - 2026-11-26
+* Publish to Open VSX on release so the extension appears in Cursor's extension search.
+* Trim the README fork differences section to user-facing behaviour.
+
 ## 1.16.8 - 2026-11-25
 * Update the Marketplace extension icon for qSFTP.
 
